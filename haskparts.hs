@@ -95,6 +95,34 @@ orPreds predLs part = or $ map ($ part) predLs
 combinePred :: (Bool -> Bool -> Bool) -> [[Int] -> Bool] -> [Int] -> Bool
 combinePred predLs part = and $ map ($ part) predLs
 
+-- Iteratively construct S if it exists, otherwise produce error
+
+numPartsPred :: ([Int] -> Bool) -> Int -> Int
+numPartsPred partPred n = length $ filter partPred $ partitions n
+
+buildSetStep :: ([Int] -> Bool) -> [Int] -> Int -> [Int]
+buildSetStep partPred setSoFar current
+                      | numPartsPred partPred current == numPartsPred setSoFarPred current = setSoFar
+                      | numPartsPred partPred current == numPartsPred setAddPred current   = setAdd
+                      | otherwise                                                          = error "no set"
+                      where setAdd       = setSoFar ++ [current]
+                            setSoFarPred = supersetOf setSoFar
+                            setAddPred   = supersetOf setAdd
+
+buildSet :: ([Int] -> Bool) -> Int -> [Int]
+buildSet partPred maxNumber = foldl step [] [1..maxNumber]
+         where step = buildSetStep partPred
+
+-- Pentagonal stuff for p(n)
+
+pentagonal :: Int -> Int
+pentagonal n = quot (3*n*n - n) 2
+
+pentagonInv :: Int -> Int
+pentagonInv g = round root
+            where float = fromIntegral g
+                  root  = (/6) . (+1) . sqrt $ (24*float + 1)
+
 -- Predicates to check (labelling from Number Theory, George Andrews)
 
 d1 = differsBy 1
@@ -131,31 +159,3 @@ e5 = limitReps 2
 e6 = combinePreds [predGap 2 1 2, biggerThan 1]
 -- [2,3,4,7,8,10,11,12,15,16,18,19,20,23,24,..]
 -- Guess: nothing equal to 1 mod 4
-
--- Iteratively construct S if it exists, otherwise produce error
-
-numPartsPred :: ([Int] -> Bool) -> Int -> Int
-numPartsPred partPred n = length $ filter partPred $ partitions n
-
-buildSetStep :: ([Int] -> Bool) -> [Int] -> Int -> [Int]
-buildSetStep partPred setSoFar current
-                      | numPartsPred partPred current == numPartsPred setSoFarPred current = setSoFar
-                      | numPartsPred partPred current == numPartsPred setAddPred current   = setAdd
-                      | otherwise                                                          = error "no set"
-                      where setAdd       = setSoFar ++ [current]
-                            setSoFarPred = supersetOf setSoFar
-                            setAddPred   = supersetOf setAdd
-
-buildSet :: ([Int] -> Bool) -> Int -> [Int]
-buildSet partPred maxNumber = foldl step [] [1..maxNumber]
-         where step = buildSetStep partPred
-
--- Pentagonal stuff for p(n)
-
-pentagonal :: Int -> Int
-pentagonal n = quot (3*n*n - n) 2
-
-pentagonInv :: Int -> Int
-pentagonInv g = round root
-            where float = fromIntegral g
-                  root  = (/6) . (+1) . sqrt $ (24*float + 1)
