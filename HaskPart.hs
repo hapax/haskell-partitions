@@ -9,6 +9,7 @@ partitions of n with some property, D(n). The function
 D is given and we want to find S.
 --}
 
+module HaskPart where
 import Data.List
 
 -- Recursively generate partitions
@@ -60,13 +61,13 @@ limitReps :: Int -> [Int] -> Bool
 limitReps n ls = all (<=n) repLengths
           where repLengths = map length $ group ls
 
-noConsecMult :: Int -> Int -> [Int] -> Bool
+noConsecMult :: Int -> [Int] -> [Int] -> Bool
 noConsecMult b rs ls = all test pairDiffs
           where diffs     = zipWith (-) (tail ls) ls
                 pairDiffs = zip diffs $ tail ls
                 test      = \(x, y) -> or [ x /= b, not $ (rem y b) `elem` rs]
 
-predGaps :: Int -> Int -> Int -> [Int] -> Bool
+predGaps :: Int -> [Int] -> Int -> [Int] -> Bool
 predGaps b rs gap ls = all test pairDiffs
           where diffs     = zipWith (-) (tail ls) ls
                 pairDiffs = zip diffs $ tail ls
@@ -83,6 +84,8 @@ noConsecMults b r ls = all test pairDiffs
           where diffs     = zipWith (-) (tail ls) ls
                 pairDiffs = zip diffs $ tail ls
                 test      = \(x, y) -> or [ x /= b, r /= rem y b]
+
+-- Logically combine predicates
 
 andPreds :: [[Int] -> Bool] -> [Int] -> Bool
 andPreds predLs part = and $ map ($ part) predLs

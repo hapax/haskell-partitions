@@ -1,7 +1,9 @@
 # haskell-partitions
 Explore partition identities experimentally in Haskell.
 See [these notes](https://hapax.github.io/haskell-partition.md)
-(unfinished!) for mathematical background and usage.
+(unfinished!) for mathematical background.
+
+### Usage
 
 ### References
 
