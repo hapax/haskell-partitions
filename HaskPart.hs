@@ -93,11 +93,6 @@ andPreds predLs part = and $ map ($ part) predLs
 orPreds :: [[Int] -> Bool] -> [Int] -> Bool
 orPreds predLs part = or $ map ($ part) predLs
 
--- UNFINISHED - need to work out how to generate list
-
-combinePred :: (Bool -> Bool -> Bool) -> [[Int] -> Bool] -> [Int] -> Bool
-combinePred predLs part = and $ map ($ part) predLs
-
 -- Iteratively construct S if it exists, otherwise produce error
 
 numPartsPred :: ([Int] -> Bool) -> Int -> Int
@@ -115,50 +110,3 @@ buildSetStep partPred setSoFar current
 buildSet :: ([Int] -> Bool) -> Int -> [Int]
 buildSet partPred maxNumber = foldl step [] [1..maxNumber]
          where step = buildSetStep partPred
-
--- Pentagonal stuff for p(n)
-
-pentagonal :: Int -> Int
-pentagonal n = quot (3*n*n - n) 2
-
-pentagonInv :: Int -> Int
-pentagonInv g = round root
-            where float = fromIntegral g
-                  root  = (/6) . (+1) . sqrt $ (24*float + 1)
-
--- Predicates to check (labelling from Number Theory, George Andrews)
-
-d1 = differsBy 1
--- [1,3,5,7,9,11,13,15,17,19,..]
--- Guess: odd numbers
-
-d2 = differsBy 2
--- [1,4,6,9,11,14,16,19,21,24,..]
--- Guess: natural numbers equal to 1, 4 mod 5
-
-d3 = differsBy 3
--- **Exception: no set
-
-e1 = combinePreds [noConsecMults 2 0, differsBy 2]
--- [1,4,7,9,12,15,17,20,23,25,..]
--- Guess: natural numbers equal to 1, 4, 7 mod 8
-
-e2 = combinePreds [noConsecMults 2 1, differsBy 2]
--- [1,5,6,9,13,14,17,21,22,25,..]
--- Guess: natural number equal to 1, 5, 6 mod 8
-
-e3 = combinePreds [noConsecMults 2 0, differsBy 2, biggerThan 2]
--- [3,4,5,11,12,13,19,20,21,..]
--- Guess: natural numbers equal to 3, 4, 5 mod 8
-
-e4 = combinePreds [noConsecMults 2 1, differsBy 2, biggerThan 1]
--- [2,3,7,10,11,15,18,19,23,..]
--- Guess: natural numbers equal to 2, 3, 7 mod 8
-
-e5 = limitReps 2
--- [1,2,4,5,7,8,10,11,13,14,16,17,19,20,22,23,25,..]
--- Guess: no multiples of 3
-
-e6 = combinePreds [predGap 2 1 2, biggerThan 1]
--- [2,3,4,7,8,10,11,12,15,16,18,19,20,23,24,..]
--- Guess: nothing equal to 1 mod 4
